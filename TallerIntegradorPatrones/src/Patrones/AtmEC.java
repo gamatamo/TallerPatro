@@ -32,15 +32,17 @@ public class AtmEC {
 
 
        public boolean sacarDinero(double dinero){
-
-
-           return false;
+           if(dinero<Balance.getAmount()){
+               Balance.setAmout(Balance.getAmount()-dinero);
+               return true;
+           }
+               return false;
        }
 
        public boolean ingresarDinero(int n, double denominacion){
-
-
-           return false;
+           double dineroIngresar=n*denominacion;
+            Balance.setAmout(Balance.getAmount()+dineroIngresar);
+           return true;
        }
 
        
