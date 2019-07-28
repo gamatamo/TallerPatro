@@ -10,8 +10,9 @@ package Chain;
  * @author gus
  */
 public interface Manejador {
-    public Manejador(int n,double denominacion);
-    public void setNext(Manejador);
-    boolean retirar();
-    depositar
-            }
+    Manejador manejador(int n,double denominacion);
+    void setNext(Manejador manejador);
+    boolean retirar(double monto);
+    boolean depositar(int n, double denominacion);
+    
+}

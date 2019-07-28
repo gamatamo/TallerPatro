@@ -9,6 +9,30 @@ package Chain;
  *
  * @author gus
  */
-public class ManejadorDinero {
+public class ManejadorDinero implements Manejador{
+    
+    private Manejador next;
+    protected int cantidad;
+    protected double denominacion;
+
+    @Override
+    public Manejador manejador(int n, double denominacion) {
+        return null;
+    }
+
+    @Override
+    public void setNext(Manejador manejador) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean retirar(double monto) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean depositar(int n, double denominacion) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

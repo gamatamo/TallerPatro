@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package Patrones;
+import Adapter.CuentaAdapter;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Scanner;
@@ -16,10 +17,13 @@ public class AtmEC {
     private static AtmEC instance = new AtmEC();
     private Currency moneda;
     private double dinero;
-    private ArrayList <Manejador> manejador;    
+    private static ArrayList <Manejador> manejadores;
+    private static CuentaAdapter cuentaAdap;
+  
+    
     
     private AtmEC() {
-        manejador = new ArrayList<>();
+
 
     }
 
@@ -33,9 +37,8 @@ public class AtmEC {
 
 
        public boolean sacarDinero(double dinero){
-            manejador.retirar(m);
-           if(dinero<Balance.getAmount()){
-               Balance.setAmout(Balance.getAmount()-dinero);
+           if(dinero<cuentaAdap.balance()){
+               cuentaAdap.retirar(cuentaAdap.balance()-dinero);
                return true;
            }
                return false;
@@ -43,41 +46,49 @@ public class AtmEC {
 
        public boolean ingresarDinero(int n, double denominacion){
            double dineroIngresar=n*denominacion;
-            Balance.setAmout(Balance.getAmount()+dineroIngresar);
+            cuentaAdap.depositar(n, cuentaAdap.balance()+dineroIngresar);
            return true;
        }
 
        
-        public void addManejador(Manejador m){
-        manejador.add(m);
-        }
-        
-        public Manejador removeManejador(int i){
-        return manejador.remove(i);
-        }
+       public void addManejador(Manejador m){
+           manejadores.add(m);
+       }
        
-      //Dentro de las transacciones se debe llamar al ATM para hacer el retiro o deposito de la cuenta correspondiente
-        public static void transaction(Account cuenta){
+       
+       public Manejador removeManejador(Manejador m){
+           for(int i=0; i<=manejadores.size();i++){
+               return manejadores.remove(i);
+           }
+           return null;
+       }
+       
+       public static void transaction(Account cuenta){
         // here is where most of the work is
+        Scanner in= new Scanner(System.in);
         int choice; 
-        Scanner sc = new Scanner(System.in);
         System.out.println("Please select an option"); 
         System.out.println("1. Withdraw");
         System.out.println("2. Deposit");
         System.out.println("3. Balance");
         System.out.println("4. Balance ATM");
-        choice = sc.nextInt();
+        choice = in.nextInt();
+        in.next();
         switch(choice){
             case 1:
                 float amount; 
-                System.out.println("Please enter amount to withdraw: "); 
-                amount = sc.nextFloat();
+                System.out.println("Por favor ingrese el monto a retirar: "); 
+                amount = in.nextFloat();
+                in.next();
                 if(amount > cuenta.getAmount() || amount == 0){
-                    System.out.println("You have insufficient funds\n\n"); 
+                    System.out.println("Su saldo es insuficiente!!\n\n"); 
+  
                     anotherTransaction(cuenta); // ask if they want another transaction
                 } else {
                     // Todo: verificar que se puede realizar el retiro del atm
-
+                    if(amount<cuenta.getAmount()){
+                        cuentaAdap.retirar(amount);
+                    }    
                     // Todo: actualizar tanto la cuenta como el atm y de los manejadores
                     // cuenta.retirar(amount);
                     // AtmUK.sacarDinero(amount);
@@ -91,7 +102,7 @@ public class AtmEC {
                     // option number 2 is depositing 
                     float deposit; 
                     System.out.println("Please enter amount you would wish to deposit: "); 
-                    deposit = sc.nextFloat();
+                    deposit = in.nextFloat();
                     // Todo: actualizar tanto la cuenta como el atm
                     
                     // Todo: Mostrar resumen de transacción o error
@@ -113,22 +124,22 @@ public class AtmEC {
             break;
         }
     }
-        public static void anotherTransaction(Account cuenta){
-            Scanner sc= new Scanner(System.in);
+
+       public static void anotherTransaction(Account cuenta){
+
+          Scanner in = new Scanner(System.in);
+        int op;
         System.out.println("Do you want another transaction?\n\nPress 1 for another transaction\n2 To exit");
-        int anotherTransaction = sc.nextInt();
-        switch (anotherTransaction) {
-            case 1:
-                transaction(cuenta); // call transaction method
-                break;
-            case 2:
-                System.out.println("Thanks for choosing us. Good Bye!");
-                break;
-            default:
-                System.out.println("Invalid choice\n\n");
-                anotherTransaction(cuenta);
-                break;
+        op = in.nextInt();
+        if (op == 1) {
+            transaction(cuenta); // call transaction method
+        } else if (op == 2) {
+            System.out.println("Thanks for choosing us. Good Bye!");
+        } else {
+            System.out.println("Invalid choice\n\n");
+            anotherTransaction(cuenta);
         }
     }
 
-}
+       }
+
