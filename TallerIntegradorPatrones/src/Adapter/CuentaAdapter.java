@@ -40,4 +40,8 @@ public class CuentaAdapter implements Cuenta{
         return true;
     }
 
+    @Override
+    public int getId() {
+        return cuenta.getId();
+    }
 }

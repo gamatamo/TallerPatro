@@ -12,6 +12,8 @@ package Chain;
 public interface Manejador {
     //Manejador manejador(int n,double denominacion);
     void setNext(Manejador manejador);
+    public double getMoney();
+    public Manejador getNext();
     boolean retirar(double monto);
     boolean depositar(int n, double denominacion);
     

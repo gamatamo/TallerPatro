@@ -28,23 +28,23 @@ public class ManejadorDinero implements Manejador{
 
     @Override
     public boolean retirar(double monto) {
-        int cantRetiro = (int)(monto/denominacion);
+        int cantRetiro = ((int)Math.round(monto*100))/((int)Math.round(denominacion*100));
         
         if(cantRetiro>cantidad && next != null ){
             return next.retirar(monto);
         }else if(cantRetiro>cantidad)
             return false;
         
-        retiro(cantRetiro);
         double faltante = monto - (denominacion*cantRetiro);
-        boolean isValid = false;
+        boolean isValid = true;
         if(faltante != 0.0 && next != null){
             isValid = next.retirar(faltante);
         }
         
-        if(isValid)
+        if(isValid && cantRetiro>0){
             retiro(cantRetiro);
-        if(next == null){
+        }
+        if(next == null && !isValid){
             return false; // no se pudo hacer la transaccion
         }
         return isValid;
@@ -52,20 +52,29 @@ public class ManejadorDinero implements Manejador{
     
     private void retiro(int dinero){
         cantidad -= dinero;
-        System.out.printf("Retira:%d de $%.2f.\n", dinero,denominacion);
+        System.out.printf("Withdraw: %d de $%.2f.\n", dinero,denominacion);
     }
     
     @Override
     public boolean depositar(int n, double denominacion) {
         if(this.denominacion == denominacion){
             cantidad+= n;
-            System.out.printf("Se depositan %d de $%.2f.\n", n, this.denominacion);
+            System.out.printf("Deposit: %d de $%.2f.\n", n, this.denominacion);
             return true;
         }else if(next == null){
             return false; // no existe el tipo de moneda o billete ingresado
         }else{
             return next.depositar(n, denominacion);
         }
+    }
+
+    @Override
+    public Manejador getNext() {
+        return next;
+    }
+    
+    public double getMoney(){
+        return cantidad* denominacion;
     }
     
 }
