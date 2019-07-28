@@ -4,10 +4,12 @@
  * and open the template in the editor.
  */
 package Patrones;
+import Adapter.Cuenta;
 import Adapter.CuentaAdapter;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Scanner;
+import Chain.Manejador;
 
 /**
  *
@@ -17,8 +19,8 @@ public class AtmEC {
     private static AtmEC instance = new AtmEC();
     private Currency moneda;
     private double dinero;
-    private static ArrayList <Manejador> manejadores;
-    private static CuentaAdapter cuentaAdap;
+    private static Manejador manejador;
+    private static Cuenta cuentaAdap;
   
     
     
@@ -29,41 +31,47 @@ public class AtmEC {
 
 
 
-    public AtmEC getInstance() {
+    public static AtmEC getInstance() {
         return instance;
     }
-      
-
-
 
        public boolean sacarDinero(double dinero){
-           if(dinero<cuentaAdap.balance()){
-               cuentaAdap.retirar(cuentaAdap.balance()-dinero);
-               return true;
-           }
-               return false;
+            if(manejador!= null){
+                return manejador.retirar(dinero);
+            }
+            return false;
        }
 
        public boolean ingresarDinero(int n, double denominacion){
-           double dineroIngresar=n*denominacion;
-            cuentaAdap.depositar(n, cuentaAdap.balance()+dineroIngresar);
-           return true;
+           if(manejador!= null){
+                return manejador.depositar(n, denominacion);
+            }
+           return false;
        }
 
-       
        public void addManejador(Manejador m){
-           manejadores.add(m);
-       }
+           if(manejador == null){
+               manejador = m;
+           }/*else{
+               for(Manejador m1 = manejador; m1 != null; m1 = m.getNext()){
+                   if(manejador.getNext() == null){
+                       manejador.setNext(m);
+                   }
+               }
+           }*/
+        }
        
        
        public Manejador removeManejador(Manejador m){
-           for(int i=0; i<=manejadores.size();i++){
+           /*for(int i=0; i<=m.size();i++){
                return manejadores.remove(i);
-           }
+           }*/
            return null;
        }
        
-       public static void transaction(Account cuenta){
+       
+       public static void transaction(Cuenta cuenta){
+        cuentaAdap = cuenta;
         // here is where most of the work is
         Scanner in= new Scanner(System.in);
         int choice; 
@@ -72,26 +80,31 @@ public class AtmEC {
         System.out.println("2. Deposit");
         System.out.println("3. Balance");
         System.out.println("4. Balance ATM");
+        System.out.print("opcion: ");
         choice = in.nextInt();
-        in.next();
+        //in.next();
         switch(choice){
             case 1:
                 float amount; 
-                System.out.println("Por favor ingrese el monto a retirar: "); 
+                System.out.print("Por favor ingrese el monto a retirar: "); 
                 amount = in.nextFloat();
-                in.next();
-                if(amount > cuenta.getAmount() || amount == 0){
+                //in.next();
+                if(amount > cuenta.balance()|| amount == 0){
                     System.out.println("Su saldo es insuficiente!!\n\n"); 
   
                     anotherTransaction(cuenta); // ask if they want another transaction
                 } else {
                     // Todo: verificar que se puede realizar el retiro del atm
-                    if(amount<cuenta.getAmount()){
+                    if(amount<cuenta.balance()){
                         cuentaAdap.retirar(amount);
                     }    
                     // Todo: actualizar tanto la cuenta como el atm y de los manejadores
-                    // cuenta.retirar(amount);
-                    // AtmUK.sacarDinero(amount);
+                    cuenta.retirar(amount);
+                    if(instance.sacarDinero(amount)){
+                        System.out.println("Se realizó el retiro exitosamente");
+                    }else{
+                        System.out.println("No hay suficiente efectivo en el ATM.");
+                    }
 
                     // Todo: Mostrar resumen de transacción o error
                     // "You have withdrawn "+amount+" and your new balance is "+balance;
@@ -125,7 +138,7 @@ public class AtmEC {
         }
     }
 
-       public static void anotherTransaction(Account cuenta){
+       public static void anotherTransaction(Cuenta cuenta){
 
           Scanner in = new Scanner(System.in);
         int op;

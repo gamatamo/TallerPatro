@@ -17,7 +17,7 @@ public class CuentaAdapter implements Cuenta{
     protected Currency moneda;
     
     public CuentaAdapter(int id, double monto){
-        
+        cuenta = new Account(id, monto);
     }
     
     @Override
@@ -39,5 +39,5 @@ public class CuentaAdapter implements Cuenta{
         cuenta.deposit(monto);
         return true;
     }
-    
+
 }
